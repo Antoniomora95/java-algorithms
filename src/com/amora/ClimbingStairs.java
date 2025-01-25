@@ -14,14 +14,29 @@ public class ClimbingStairs {
         }
         var memory = climbStairs(n - 1) + climbStairs(n - 2);
         memo.put(n, memory);
+
+        long memo = Runtime.getRuntime().totalMemory() / 1000000;
+        System.out.printf("climbStairs takes %s megabytes \n", memo);
+
         return memory;
     }
 
+    public int climbStairs2(int n) {
+        int beforePrev = 1;
+        int prev = 1;
+        int current = 0;
+       for(int i = 2; i <=n; i++) {
+           current = beforePrev + prev;
+           beforePrev = prev;
+           prev = current;
+       }
+       long memory = Runtime.getRuntime().totalMemory() / 1000000;
+       System.out.printf("climbStairs2 takes %s megabytes \n", memory);
+       return current;
+    }
+
     public static void main(String[] args){
-        ClimbingStairs stairsAlgorithm = new ClimbingStairs();
-        var start = System.currentTimeMillis();
-        System.out.printf("here is the result: %s \n", stairsAlgorithm.climbStairs(45));
-        System.out.println( System.currentTimeMillis() - start);
+        //ClimbingStairs stairsAlgorithm = new ClimbingStairs();
     }
 }
 
