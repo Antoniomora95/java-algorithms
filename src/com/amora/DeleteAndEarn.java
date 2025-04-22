@@ -15,11 +15,10 @@ public class DeleteAndEarn {
     public int deleteAndEarn(int[] nums) {
         Map<Integer, Integer> totals = new HashMap<>();
         for (int num : nums) {
-            Integer prevValue = totals.get(num);
-            if (Objects.isNull(prevValue)) {
+            if (!totals.containsKey(num)) {
                 totals.put(num, num);
             } else {
-                totals.put(num, prevValue + num);
+                totals.put(num, totals.get(num) + num);
             }
         }
         List<Integer> ordered = totals.keySet()
@@ -28,35 +27,32 @@ public class DeleteAndEarn {
                 .collect(Collectors.toList());
 
         int amountUniques = ordered.size();
-       int[] results = new int[amountUniques];
+        int[] results = new int[amountUniques];
 
         for (int i = 0; i < amountUniques; i++) {
-            int keyNumber = ordered.get(i);
-            if(i == 0) {
-                results[i] = totals.get(keyNumber);
+            int unique = ordered.get(i);
+            int total = totals.get(unique);
+            if (i < 1) {
+                results[i] = total;
                 continue;
             }
-            boolean isOneAbove = keyNumber - 1 == ordered.get(i-1);
-            if (isOneAbove) {
-                results[i] = Math.max(
-                        getSafeAt(results, i - 2),
-                        getSafeAt(results, i - 3)
-                ) + totals.get(keyNumber);
-            } else {
-                results[i] = Math.max(
-                        getSafeAt(results, i - 1),
-                        getSafeAt(results, i - 2)
-                ) + totals.get(keyNumber);
-            }
+            boolean isOneAbove = unique - 1 == ordered.get(i - 1);
+            // if there is a difference of 1 between 2 items, then
+            // you cannot sum them together? you have to go 2 and 3 places before
+            results[i] = Math.max(
+                    getSafeAt(results, i - 2),
+                    getSafeAt(results, i - (isOneAbove ? 3 : 1))
+            ) + total;
+
         }
         return amountUniques > 1 ? (
                 Math.max(results[amountUniques - 1], results[amountUniques - 2])
-                ) : results[amountUniques - 1];
+        ) : results[amountUniques - 1];
     }
 
     public static void main(String[] args) {
         DeleteAndEarn algo = new DeleteAndEarn();
-        System.out.println(algo.deleteAndEarn(new int[]{1,1,1,2,4,5,5,5,6}));
+        System.out.println(algo.deleteAndEarn(new int[]{1, 1, 1, 2, 4, 5, 5, 5, 6}));
     }
 }
 // similar approach to house robber
